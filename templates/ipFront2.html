@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safe Steps - Object Detection for the Visually Impaired</title>
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC&display=swap" rel="stylesheet">
+    <!-- Add EmailJS library -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script>
+        (function() {
+            // Initialize EmailJS with your public key
+            emailjs.init("public_key_here"); // Replace with your actual EmailJS public key
+        })();
+    </script>
+
+   <style>
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Amatic SC', cursive;
+    background-color: #fff;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 100%;
+    padding: 15px;
+    margin: 0 auto;
+}
+
+.header {
+    background-color: #7a4b3a;
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+.site-title {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.video-container {
+    width: 100%;
+    max-width: 640px;
+    margin: 20px auto;
+    position: relative;
+    background-color: #000;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.video-feed {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.btn {
+    background-color: #7a4b3a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #5a3a2a;
+}
+
+.status {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #7a4b3a;
+}
+
+.alerts {
+    max-width: 640px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.alert-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 1.1em;
+}
+
+.alert-item:last-child {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .site-title {
+        font-size: 1.5em;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 1em;
+    }
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(122, 75, 58, 0.05) 0%, rgba(255, 255, 255, 0.1) 100%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* Header Section */
+.header .container {
+    display: flex;
+    justify-content: space-between; /* Distribute space evenly between items */
+    width: 100%;
+}
+
+/* Header Section */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 20px;
+    color: #fff;
+}
+
+.logo {
+    height: 50px;
+}
+
+/* Move header buttons to the right */
+.header-buttons {
+    display: flex;
+    margin-left: auto; 
+}
+
+/* Button styling */
+.cta-btn {
+    background-color: #7a4b3a; /* Brown button */
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+}
+
+.cta-btn.brown {
+    background-color: #7a4b3a;
+}
+
+.cta-btn:hover {
+    background-color: #333;
+}
+
+/* Hero Section */
+.hero-section {
+    background-color: #fff; /* White background for hero */
+    color: #000;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.hero-title {
+    font-size: 3em;
+    color: #000;
+    font-family: 'Amatic SC', cursive;
+}
+
+.hero-section p {
+    font-size: 1.2em;
+    margin: 20px 0;
+}
+.innerCon{
+    display: flex;
+justify-content: space-between;
+   width: 100%;
+
+}
+.cta-btn.brown {
+    background-color: #ffffff;
+    color: #000;
+    font-size: larger;
+    font-weight: bold;
+}
+
+.cta-btn:hover {
+    text-decoration: underline;
+}
+
+/* Features Section */
+.features {
+    padding: 50px 0;
+}
+
+.feature {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.feature-image {
+    flex:2;
+    padding: 20px;
+}
+
+.feature-image img {
+    width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.feature-text {
+    flex: 2;
+    padding: 20px;
+}
+
+.feature-text h2 {
+    font-family: 'Amatic SC';
+    font-size: 1.8em;
+    color: #4e6d7c;
+    margin-bottom: 10px;
+}
+
+.feature-text {
+    font-family: 'Amatic SC';
+    font-size: 1.1em;
+    color: #555;
+}
+
+/* Reverse layout for alternating images */
+.feature.reverse {
+    flex-direction: row-reverse;
+}
+
+/* Testimonials Section */
+.testimonials {
+    background-color: #f0f0f0;
+    padding: 50px 0;
+    text-align: center;
+}
+
+.testimonial {
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.testimonial p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.testimonial h3 {
+    font-size: 1.5em;
+    color: #e2d522;
+    font-weight: bold;
+}
+.testimonial-info {
+    display: flex;
+    align-items: center;  /* Aligns the image and name horizontally */
+    justify-content: center;
+}
+.less{
+    background-color: #7a4b3a;
+    color: #ddd;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1.1em;
+    text-decoration: none;
+}
+.less:hover{
+background-color: #746b68;
+}
+.testimonial-image {
+    padding: 5 5 5 10px;
+    width: 30px;  /* Adjust the width of the image */
+    height: 30px;  /* Adjust the height of the image */
+    border-radius: 50%;  /* Makes the image circular */
+    margin-right: 10px;  /* Adds space between the image and the name */
+    object-fit: cover;  /* Ensures the image fits inside the circle */
+}
+
+h3 {
+    font-size: 1.2em;
+    color: #e2d522; /* Optional: matching the theme color */
+}
+
+/* Star Rating */
+.star-rating {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.star {
+    font-size: 1.5em;
+    color: #f39c12; /* Golden star color */
+    margin: 0 3px;
+}
+
+.star.filled {
+    color: #f39c12; /* Golden color for filled stars */
+}
+
+.star.empty {
+    color: #ddd; /* Light grey color for empty stars */
+}
+
+.safe {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+/* Footer Section */
+/* Footer Section */
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 30px 0;
+    display: flex;
+    justify-content: center; /* Centers content horizontally */
+    align-items: center; /* Centers content vertically */
+    text-align: center; /* Ensures text is centered */
+}
+
+.footer .container {
+    display: flex;
+    justify-content: center; /* Centers the container content */
+    align-items: center; /* Aligns items vertically within the container */
+    flex-direction: column; /* Stacks the footer links vertically */
+}
+
+/* Footer Links and Social Media Links */
+.footer-links, .social-media {
+    margin-bottom: 10px; /* Adds space between sections */
+}
+
+.footer-links a,
+.social-media a {
+    color: #fff;
+    margin-right: 20px;
+    text-decoration: none;
+}
+
+.footer-links a:hover,
+.social-media a:hover {
+    text-decoration: underline;
+}
+
+.video-container {
+    width: 320px;  /* Match the video dimensions */
+    height: 320px;
+    margin: 20px auto;  /* Center the container */
+    border: 2px solid #7a4b3a;  /* Brown border */
+    border-radius: 8px;
+    overflow: hidden;  /* Keep the video within the container */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.video-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* Maintain aspect ratio */
+}
+
+.caption-display {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    font-size: 1.2em;
+    text-align: center;
+    z-index: 1000;
+}
+
+#caption-text {
+    margin: 0;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.4em;
+}
+
+#video-feed {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Add these styles to your existing CSS */
+.review-form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.review-form h2 {
+    text-align: center;
+    color: #7a4b3a;
+    margin-bottom: 20px;
+    font-family: 'Amatic SC', cursive;
+    font-size: 2em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+}
+
+.rating-select {
+    display: flex;
+    gap: 5px;
+}
+
+.rating-select .star {
+    font-size: 24px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.rating-select .star:hover,
+.rating-select .star.active {
+    color: #f39c12;
+}
+
+.submit-review {
+    background-color: #7a4b3a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+    width: 100%;
+}
+
+.submit-review:hover {
+    background-color: #5a3a2a;
+}
+
+/* Add these styles to your existing CSS */
+.review-toggle {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.toggle-container {
+    display: inline-flex;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    gap: 10px;
+}
+
+.toggle-btn {
+    background-color: #7a4b3a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+}
+
+.toggle-btn:hover {
+    background-color: #5a3a2a;
+}
+
+.review-form {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+/* Add these styles to your existing CSS */
+.testimonial {
+    position: relative;
+}
+
+.delete-review {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+}
+
+.testimonial:hover .delete-review {
+    display: flex;
+}
+
+.delete-review:hover {
+    background-color: #cc0000;
+}
+
+/* Add these styles to your existing CSS */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #7a4b3a;
+}
+
+.modal-content h2 {
+    color: #7a4b3a;
+    font-family: 'Amatic SC', cursive;
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.modal-content p {
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.team-names {
+    font-weight: bold;
+    color: #7a4b3a;
+}
+
+/* Add these styles to your existing CSS */
+.contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.submit-contact {
+    background-color: #7a4b3a;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+}
+
+.submit-contact:hover {
+    background-color: #5a3a2a;
+}
+
+.success-message {
+    display: none;
+    color: #28a745;
+    text-align: center;
+    font-family: 'Amatic SC', cursive;
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+/* Add new styles for detection */
+.detection-info {
+    max-width: 640px;
+    margin: 20px auto;
+    padding: 15px;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.warning {
+    color: #ff4444;
+    font-weight: bold;
+}
+
+.detection-status {
+    text-align: center;
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #7a4b3a;
+}
+
+.confidence-indicator {
+    font-size: 0.9em;
+    color: #666;
+    margin-left: 10px;
+}
+
+.high-confidence {
+    color: #4CAF50;
+}
+
+.medium-confidence {
+    color: #FFC107;
+}
+
+.low-confidence {
+    color: #FF5722;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.7; }
+    100% { opacity: 1; }
+}
+
+video {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    transform: scaleX(-1); /* Mirror the video */
+}
+
+/* Detection styles */
+.high-confidence {
+    color: #28a745;
+}
+.medium-confidence {
+    color: #ffc107;
+}
+.low-confidence {
+    color: #dc3545;
+}
+.caution {
+    color: #ff9800;
+}
+.alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px;
+    margin: 4px 0;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+.object-class {
+    font-weight: bold;
+}
+.distance {
+    color: #6c757d;
+}
+.position {
+    color: #495057;
+}
+.confidence {
+    font-size: 0.9em;
+}
+</style>
+</head>
+<body>
+    <!-- Add this right after the body tag -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>About Us</h2>
+            <p>We are a team of four enthusiastic B.Tech students from Chitkara University—<span class="team-names">Anshu, Anubhav, Ayush Sharma, and Ayush Thakur</span>—united by a shared vision of using technology for social good.</p>
+            <p>This project is aimed at assisting visually impaired individuals through a real-time object detection system with audio alerts, helping them navigate their surroundings more safely and independently. Our static site serves as a showcase of this initiative and the work we've put into it.</p>
+            <p>Driven by curiosity and compassion, we've designed this system to blend machine learning and practical usability, all while continuing to learn and grow as engineers.</p>
+            <p style="text-align: center; font-size: 1.3em; margin-top: 20px;">Happy Learning 😊</p>
+        </div>
+    </div>
+
+    <!-- Add this after the about modal -->
+    <div id="contactModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Contact Us</h2>
+            <form id="contactForm" class="contact-form">
+                <div class="form-group">
+                    <label for="contactName">Your Name:</label>
+                    <input type="text" id="contactName" name="contactName" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactEmail">Your Email:</label>
+                    <input type="email" id="contactEmail" name="contactEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactMessage">Your Message:</label>
+                    <textarea id="contactMessage" name="contactMessage" required></textarea>
+                </div>
+                <button type="submit" class="submit-contact">Send Message</button>
+                <div id="successMessage" class="success-message">
+                    Thank you for your message! We'll get back to you soon. 😊
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header Section with Logo and Title -->
+    <header class="header">
+        <div class="container">
+            <div class="innerCon">
+            <img src="https://media.tenor.com/b6EO60xQZGkAAAAj/shremp-shrempin.gif" alt="Safe Steps Logo" class="logo">
+            <h1 class="site-title">Safe Steps</h1>
+            <div class="header-buttons">
+                <a href="#about" class="cta-btn brown">About</a>
+                <a href="#contact" class="cta-btn brown">Contact Us</a>
+            </div>
+        </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1 class="hero-title">Safe Steps: See the World Differently</h1>
+            <p>Enhancing the lives of the visually impaired with object detection and a touch of humor.</p>
+            <a href="#" class="less">Less Goo!</a>
+        </div>
+        <div class="video-container">
+            <video id="video" autoplay playsinline></video>
+            <div id="status" class="status">Camera not started</div>
+            <div id="detection-info" class="detection-info" style="display: none;">
+                <div id="detection-status" class="detection-status"></div>
+                <div id="detection-list"></div>
+            </div>
+        </div>
+        
+        <script>
+            let lastAlert = "";
+            let isDetectionRunning = false;
+            let frameCaptureInterval = null;
+            let lastAlertTime = 0;
+            const ALERT_COOLDOWN = 2000; // Minimum time between alerts in milliseconds
+            const video = document.getElementById('video');
+
+            async function initializeCamera() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: {
+                            facingMode: 'environment', // Use the back camera
+                            width: { ideal: 1280 },
+                            height: { ideal: 720 }
+                        }
+                    });
+                    video.srcObject = stream;
+                    document.getElementById('status').textContent = 'Camera started';
+                    return stream;
+                } catch (error) {
+                    console.error('Error accessing camera:', error);
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                    throw error;
+                }
+            }
+
+            function speak(text) {
+                if ('speechSynthesis' in window) {
+                    const synth = window.speechSynthesis;
+                    // Cancel any ongoing speech
+                    synth.cancel();
+                    
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 0.9; // Slightly slower for clarity
+                    utterance.pitch = 1;
+                    utterance.volume = 1;
+                    synth.speak(utterance);
+                }
+            }
+
+            function vibrateDevice(pattern) {
+                // Check if vibration is supported
+                if ('vibrate' in navigator) {
+                    navigator.vibrate(pattern);
+                }
+            }
+
+            function updateDetectionDisplay(detections) {
+                const infoDiv = document.getElementById('detection-info');
+                const statusDiv = document.getElementById('detection-status');
+                const listDiv = document.getElementById('detection-list');
+                
+                infoDiv.style.display = 'block';
+                
+                if (detections.length === 0) {
+                    statusDiv.textContent = 'No objects detected within warning range';
+                    listDiv.innerHTML = '';
+                    return;
+                }
+
+                let html = '';
+                let closestObject = null;
+                let closestDistance = Infinity;
+
+                detections.forEach(det => {
+                    const isClose = det.distance <= 70;
+                    const isVeryClose = det.distance <= 50;
+                    const distanceClass = isVeryClose ? 'warning' : (isClose ? 'caution' : '');
+                    
+                    // Add confidence indicator
+                    const confidencePercent = Math.round(det.confidence * 100);
+                    const confidenceClass = confidencePercent >= 80 ? 'high-confidence' : 
+                                          confidencePercent >= 60 ? 'medium-confidence' : 'low-confidence';
+
+                    html += `
+                        <div class="alert-item ${distanceClass}">
+                            <span class="object-class">${det.class}</span>
+                            <span class="distance">${det.distance}cm</span>
+                            <span class="position">${det.position}</span>
+                            <span class="confidence ${confidenceClass}">${confidencePercent}%</span>
+                        </div>
+                    `;
+
+                    // Track closest object
+                    if (det.distance < closestDistance) {
+                        closestDistance = det.distance;
+                        closestObject = det;
+                    }
+                });
+                listDiv.innerHTML = html;
+                
+                // Generate and speak alert for closest object
+                if (closestObject) {
+                    let urgency = "";
+                    let vibrationPattern = null;
+                    
+                    if (closestObject.distance <= 50) {
+                        urgency = "Urgent! ";
+                        // Strong vibration pattern for very close objects
+                        vibrationPattern = [200, 100, 200, 100, 200];
+                    } else if (closestObject.distance <= 70) {
+                        urgency = "Warning! ";
+                        // Moderate vibration pattern for close objects
+                        vibrationPattern = [200, 200, 200];
+                    }
+                    
+                    // Get confidence level text
+                    const confidencePercent = Math.round(closestObject.confidence * 100);
+                    let confidenceLevel = "low";
+                    if (confidencePercent >= 80) {
+                        confidenceLevel = "high";
+                    } else if (confidencePercent >= 60) {
+                        confidenceLevel = "medium";
+                    }
+                    
+                    const msg = `${urgency}${closestObject.class} on your ${closestObject.position} with ${confidenceLevel} confidence (${confidencePercent}%).`;
+
+                    // Check if enough time has passed since the last alert
+                    const now = Date.now();
+                    if (msg !== lastAlert && (now - lastAlertTime) >= ALERT_COOLDOWN) {
+                        lastAlert = msg;
+                        lastAlertTime = now;
+                        speak(msg);
+                        
+                        // Trigger vibration if pattern is set
+                        if (vibrationPattern) {
+                            vibrateDevice(vibrationPattern);
+                        }
+                    }
+                }
+            }
+
+            function startMobileFrameCapture() {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                
+                frameCaptureInterval = setInterval(() => {
+                    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        // Convert to blob and send to server
+                        canvas.toBlob((blob) => {
+                            const formData = new FormData();
+                            formData.append('frame', blob);
+                            
+                            fetch('/process-frame', {
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.detections) {
+                                    updateDetectionDisplay(data.detections);
+                                }
+                            })
+                            .catch(error => console.error('Error sending frame:', error));
+                        }, 'image/jpeg', 0.8);
+                    }
+                }, 200); // 5 FPS for better accuracy
+            }
+
+            function stopMobileFrameCapture() {
+                if (frameCaptureInterval) {
+                    clearInterval(frameCaptureInterval);
+                }
+            }
+
+            async function startDetection() {
+                try {
+                    const stream = await initializeCamera();
+                    
+                    // Start the detection
+                    const response = await fetch('/run-detection');
+                    if (response.ok) {
+                        document.getElementById('status').textContent = 'Detection running';
+                        isDetectionRunning = true;
+                        document.querySelector('.less').textContent = 'Stop Detection';
+                        startMobileFrameCapture();
+                    } else {
+                        throw new Error('Failed to start detection');
+                    }
+                } catch (error) {
+                    console.error('Error starting detection:', error);
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                }
+            }
+
+            async function stopDetection() {
+                try {
+                    const response = await fetch('/stop-detection');
+                    if (response.ok) {
+                        document.getElementById('status').textContent = 'Detection stopped';
+                        isDetectionRunning = false;
+                        document.querySelector('.less').textContent = 'Less Goo!';
+                        stopMobileFrameCapture();
+                        
+                        // Stop all tracks in the stream
+                        if (video.srcObject) {
+                            video.srcObject.getTracks().forEach(track => track.stop());
+                        }
+                        
+                        // Hide detection info
+                        document.getElementById('detection-info').style.display = 'none';
+                    } else {
+                        throw new Error('Failed to stop detection');
+                    }
+                } catch (error) {
+                    console.error('Error stopping detection:', error);
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                }
+            }
+
+            // Initialize camera when page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeCamera().catch(error => {
+                    console.error('Error initializing camera:', error);
+                    document.getElementById('status').textContent = 'Error: ' + error.message;
+                });
+
+                // Update the "Less Goo!" button click handler
+                document.querySelector('.less').addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    try {
+                        if (!isDetectionRunning) {
+                            await startDetection();
+                        } else {
+                            await stopDetection();
+                        }
+                    } catch (error) {
+                        console.error('Error toggling detection:', error);
+                        document.getElementById('status').textContent = 'Error: ' + error.message;
+                    }
+                });
+
+                // Add haptic feedback permission request
+                if ('vibrate' in navigator) {
+                    // Some browsers might require user interaction for vibration
+                    document.querySelector('.less').addEventListener('click', function() {
+                        // Test vibration with a short pulse
+                        navigator.vibrate(100);
+                    });
+                }
+            });
+        </script>
+        <div class="testimonial">
+            <!-- Five-star review -->
+            <div class="star-rating">
+                <span class="star filled">&#9733;</span>
+                <span class="star filled">&#9733;</span>
+                <span class="star filled">&#9733;</span>
+                <span class="star filled">&#9733;</span>
+                <span class="star filled">&#9733; </span>
+                <span class="safe" >   |  Safe  |  Innovative</span>
+            
+            </div>
+            <div class="testimonial-info">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb3hLrQ61iu-O0EB0mwof2Qxjffido9LxotQ&s" alt="David Lee" class="testimonial-image">
+                <h3>- Deep thorat -</h3>
+            </div>
+            <p>"Its accuracy made me review it directly from heaven! loved it!!!!."</p>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <div class="feature">
+                <div class="feature-image">
+                    <img src="https://miro.medium.com/v2/resize:fit:989/1*TcPBnTxgn1a3B8RuiXuNyQ.png" alt="Object Detection">
+                </div>
+                <div class="feature-text">
+                    <h2>Detect Objects Instantly</h2>
+                    <p>Safe Steps is an AI-powered solution designed to assist visually impaired individuals by instantly detecting objects and measuring their distances. Using advanced computer vision and real-time processing, it provides immediate feedback through audio alerts, ensuring users are aware of obstacles in their surroundings. The system accurately identifies objects and determines their proximity, helping users navigate safely without physical assistance. Whether indoors or outdoors, Safe Steps enhances mobility by reducing the risk of collisions. Its seamless integration with a mobile or web app makes it accessible and user-friendly. </p>
+                </div>
+            </div>
+            <div class="feature reverse">
+                <div class="feature-image">
+                    <img src="https://media.makeameme.org/created/stay-safe-kids-599e24.jpg" alt="Independence">
+                </div>
+                <div class="feature-text">
+                    <h2>Stay Safe and Independent</h2>
+                    <p>With Safe Steps, users can navigate their surroundings confidently, ensuring safety and independence. This AI-powered solution instantly detects objects and measures their distances, providing real-time audio alerts to prevent collisions. Using advanced computer vision, it accurately identifies obstacles and helps users make informed movements. Whether walking indoors or outdoors, Safe Steps enhances mobility by offering crucial spatial awareness. Its seamless integration with mobile and web apps ensures accessibility and ease of use. The system leverages YOLO and depth estimation for precise detection and distance measurement. With real-time speech output, users receive instant alerts when objects cross a predefined range. Safe Steps empowers visually impaired individuals with greater freedom and security in their daily lives.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-image">
+                    <img src="https://media3.giphy.com/media/3o6MbiSHsSrEk7On7i/200w.gif?cid=6c09b952q2i8dubsxqskd97uk30dw76z2w1pnrws95l86jdl&ep=v1_gifs_search&rid=200w.gif&ct=g" alt="Humor">
+                </div>
+                <div class="feature-text">
+                    <h2>No Hesitation! while stepping forward</h2>
+                    <p>Safe Steps enhances the lives of visually impaired individuals by providing instant object detection and distance measurement. With real-time audio alerts, users can move forward confidently without hesitation, reducing the risk of collisions. The AI-powered system accurately identifies obstacles and provides crucial spatial awareness for safe navigation. Whether indoors or outdoors, it ensures independence and security by guiding users through their surroundings. Using YOLO and depth estimation, Safe Steps delivers precise object detection and range estimation. Its seamless mobile and web integration makes it easily accessible for everyday use. With instant speech output, users receive timely warnings when an object is too close. Safe Steps empowers individuals to walk freely and safely, fostering confidence and mobility.</p>
+                </div>
+            </div>
+            <div class="feature reverse">
+                <div class="feature-image">
+                    <img src="https://i.insider.com/636e72b8951bdc00182daec7?width=700" alt="Memes">
+                </div>
+                <div class="feature-text">
+                    <h2>Navigating Life with Tech</h2>
+                    <p>Unlocking a world of possibilities for the visually impaired, Safe Steps seamlessly blends cutting-edge technology with everyday living. This AI-powered solution detects objects in real time and measures their distances, providing instant audio feedback for safe navigation. By leveraging advanced computer vision and deep learning, it enhances spatial awareness and reduces the risk of collisions. Whether indoors or outdoors, users can move confidently without hesitation. The system integrates seamlessly with mobile and web apps, ensuring accessibility and ease of use. With YOLO-based object detection and precise depth estimation, Safe Steps delivers reliable and efficient assistance. Real-time speech alerts keep users informed of nearby obstacles, empowering them to navigate independently. Safe Steps is more than just a tool—it's a gateway to greater freedom and security in daily life.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonials">
+        <div class="container">
+            <div class="testimonial">
+                <div class="testimonial-info">
+                    <img src="https://media.tenor.com/kozmXg6aSY8AAAAe/typical-not.png" alt="Adam Perez" class="testimonial-image">
+                    <h3>- Madarch od Pyare -</h3>
+                </div>
+                <p>"i was fine without it but it added thrill in my life. absolutely fabulous!"</p>
+            </div>
+
+            <!-- Toggle Button for Review Form -->
+            <div class="review-toggle">
+                <div class="toggle-container">
+                    <button id="toggleReviewForm" class="toggle-btn">Share Your Experience</button>
+                    <button id="hideReviewForm" class="toggle-btn" style="display: none;">Hide Review Form</button>
+                </div>
+            </div>
+
+            <!-- New Review Submission Form -->
+            <div class="review-form" style="display: none;">
+                <h2>Share Your Experience</h2>
+                <form id="reviewForm">
+                    <div class="form-group">
+                        <label for="reviewerName">Your Name:</label>
+                        <input type="text" id="reviewerName" name="reviewerName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Your Rating:</label>
+                        <div class="rating-select">
+                            <span class="star" data-rating="1">&#9733;</span>
+                            <span class="star" data-rating="2">&#9733;</span>
+                            <span class="star" data-rating="3">&#9733;</span>
+                            <span class="star" data-rating="4">&#9733;</span>
+                            <span class="star" data-rating="5">&#9733;</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="reviewText">Your Review:</label>
+                        <textarea id="reviewText" name="reviewText" rows="4" required></textarea>
+                    </div>
+
+                    <button type="submit" class="submit-review">Submit Review</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Home</a>
+            </div>
+            <div class="social-media">
+                <a href="https://www.facebook.com/share/1Bj4Xho8fY/" target="_blank">Facebook</a>
+                <a href="https://www.instagram.com/safe_steps_moveahead?igsh=anAzcTVmcHY2bDQ3" target="_blank">Instagram</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // const button=
+        // function runPython() {
+        //     fetch('/run-python')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             document.getElementById('output').innerText = data.message;
+        //         })
+        //         .catch(error => console.error('Error:', error));
+        //     }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const stars = document.querySelectorAll('.rating-select .star');
+            let selectedRating = 0;
+            const reviewForm = document.querySelector('.review-form');
+            const toggleButton = document.getElementById('toggleReviewForm');
+            const hideButton = document.getElementById('hideReviewForm');
+
+            // Load saved reviews
+            function loadSavedReviews() {
+                const savedReviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+                savedReviews.forEach(review => {
+                    addReviewToPage(review.name, review.rating, review.text, review.id);
+                });
+            }
+
+            // Save review to localStorage
+            function saveReview(name, rating, text) {
+                const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+                const newReview = {
+                    id: Date.now(),
+                    name: name,
+                    rating: rating,
+                    text: text
+                };
+                reviews.push(newReview);
+                localStorage.setItem('reviews', JSON.stringify(reviews));
+                return newReview.id;
+            }
+
+            // Delete review from localStorage
+            function deleteReview(reviewId) {
+                const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+                const updatedReviews = reviews.filter(review => review.id !== reviewId);
+                localStorage.setItem('reviews', JSON.stringify(updatedReviews));
+            }
+
+            // Add review to page
+            function addReviewToPage(name, rating, text, reviewId) {
+                const newReview = document.createElement('div');
+                newReview.className = 'testimonial';
+                newReview.dataset.reviewId = reviewId;
+                newReview.innerHTML = `
+                    <button class="delete-review" title="Delete Review">×</button>
+                    <div class="testimonial-info">
+                        <img src="https://via.placeholder.com/30" alt="${name}" class="testimonial-image">
+                        <h3>- ${name} -</h3>
+                    </div>
+                    <div class="star-rating">
+                        ${Array(rating).fill('<span class="star filled">&#9733;</span>').join('')}
+                        ${Array(5 - rating).fill('<span class="star empty">&#9733;</span>').join('')}
+                    </div>
+                    <p>"${text}"</p>
+                `;
+
+                const testimonials = document.querySelectorAll('.testimonial');
+                let deepThoratReview = null;
+                let madarchReview = null;
+
+                testimonials.forEach(testimonial => {
+                    const nameElement = testimonial.querySelector('h3');
+                    if (nameElement && nameElement.textContent.includes('Deep thorat')) {
+                        deepThoratReview = testimonial;
+                    }
+                    if (nameElement && nameElement.textContent.includes('Madarch od Pyare')) {
+                        madarchReview = testimonial;
+                    }
+                });
+                
+                if (rating >= 4 && deepThoratReview) {
+                    deepThoratReview.insertAdjacentElement('afterend', newReview);
+                } else if (madarchReview) {
+                    madarchReview.insertAdjacentElement('afterend', newReview);
+                } else {
+                    document.querySelector('.review-form').insertAdjacentElement('beforebegin', newReview);
+                }
+
+                // Add delete functionality
+                const deleteButton = newReview.querySelector('.delete-review');
+                deleteButton.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this review?')) {
+                        deleteReview(reviewId);
+                        newReview.remove();
+                    }
+                });
+            }
+
+            // Load saved reviews when page loads
+            loadSavedReviews();
+
+            // Toggle review form visibility
+            toggleButton.addEventListener('click', function() {
+                reviewForm.style.display = 'block';
+                toggleButton.style.display = 'none';
+                hideButton.style.display = 'inline-block';
+            });
+
+            hideButton.addEventListener('click', function() {
+                reviewForm.style.display = 'none';
+                toggleButton.style.display = 'inline-block';
+                hideButton.style.display = 'none';
+            });
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating');
+                    selectedRating = rating;
+                    
+                    stars.forEach(s => {
+                        if (s.getAttribute('data-rating') <= rating) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+            });
+
+            document.getElementById('reviewForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('reviewerName').value;
+                const review = document.getElementById('reviewText').value;
+                
+                if (selectedRating === 0) {
+                    alert('Please select a rating');
+                    return;
+                }
+
+                // Save review and get its ID
+                const reviewId = saveReview(name, selectedRating, review);
+                
+                // Add review to page
+                addReviewToPage(name, selectedRating, review, reviewId);
+
+                // Reset form
+                this.reset();
+                stars.forEach(star => star.classList.remove('active'));
+                selectedRating = 0;
+            });
+
+            // About Modal functionality
+            const aboutBtn = document.querySelector('a[href="#about"]');
+            const aboutModal = document.getElementById('aboutModal');
+            const closeModal = document.querySelector('.close-modal');
+
+            aboutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                aboutModal.style.display = 'flex';
+            });
+
+            closeModal.addEventListener('click', function() {
+                aboutModal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(e) {
+                if (e.target === aboutModal) {
+                    aboutModal.style.display = 'none';
+                }
+            });
+
+            // Contact Modal functionality
+            const contactBtn = document.querySelector('a[href="#contact"]');
+            const contactModal = document.getElementById('contactModal');
+            const contactForm = document.getElementById('contactForm');
+            const successMessage = document.getElementById('successMessage');
+            const closeContactBtn = contactModal.querySelector('.close-modal');
+
+            contactBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                contactModal.style.display = 'flex';
+            });
+
+            function closeContactModal() {
+                contactModal.style.display = 'none';
+                contactForm.reset();
+                successMessage.style.display = 'none';
+            }
+
+            // Close modal when clicking the × button
+            closeContactBtn.addEventListener('click', closeContactModal);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === contactModal) {
+                    closeContactModal();
+                }
+            });
+
+            // Handle form submission
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Get form data
+                const name = document.getElementById('contactName').value;
+                const email = document.getElementById('contactEmail').value;
+                const message = document.getElementById('contactMessage').value;
+
+                // Show loading state
+                const submitButton = contactForm.querySelector('.submit-contact');
+                const originalButtonText = submitButton.textContent;
+                submitButton.textContent = 'Sending...';
+                submitButton.disabled = true;
+
+                // Prepare email parameters
+                const templateParams = {
+                    to_email: 'humsabekh245@gmail.com',
+                    from_name: name,
+                    from_email: email,
+                    message: message,
+                    reply_to: email
+                };
+
+                // Send email using EmailJS
+                emailjs.send('service_id_here', 'template_id_here', templateParams)
+                    .then(function(response) {
+                        console.log('SUCCESS!', response.status, response.text);
+                        successMessage.style.display = 'block';
+                        contactForm.reset();
+                        
+                        // Hide success message and close modal after 3 seconds
+                        setTimeout(function() {
+                            closeContactModal();
+                        }, 3000);
+                    })
+                    .catch(function(error) {
+                        console.log('FAILED...', error);
+                        alert('Failed to send message. Please try again later.');
+                    })
+                    .finally(function() {
+                        // Reset button state
+                        submitButton.textContent = originalButtonText;
+                        submitButton.disabled = false;
+                    });
+            });
+        });
+    </script>
+</body>
+</html>
